@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Evaluación de Factores Psicológicos · UPS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:#007F8C;--coral:#D94F3D;--gold:#E8A838;--mint:#00B4A0;
+  --pre:#1A6FA0;--prc:#B45309;--man:#D94F3D;--pro:#065F46;
+  --bg:#0D1520;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.09);
+  --text:#E8EDF2;--muted:rgba(232,237,242,0.45);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 15% 10%,rgba(0,127,140,.13) 0%,transparent 60%),
+             radial-gradient(ellipse 55% 45% at 85% 85%,rgba(107,63,160,.10) 0%,transparent 55%);
+  pointer-events:none;z-index:0;}
+.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:1.8rem 1.2rem 4rem;max-width:640px;margin:0 auto;animation:fadeUp .4s ease both;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.actor-badge{display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem;border-radius:30px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;width:fit-content;margin-bottom:1.5rem;}
+.actor-psi{background:rgba(0,127,140,.15);border:1.5px solid rgba(0,127,140,.35);color:var(--mint);}
+.actor-psi::before{content:'🎓 ';}
+.actor-pac{background:rgba(232,168,56,.12);border:1.5px solid rgba(232,168,56,.3);color:var(--gold);}
+.actor-pac::before{content:'🙋 ';}
+.actor-info{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);color:rgba(232,237,242,.7);}
+.actor-info::before{content:'📋 ';}
+.screen-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:900;line-height:1.15;margin-bottom:.5rem;}
+.screen-title span{color:var(--mint);}
+.screen-sub{font-size:.9rem;color:var(--muted);line-height:1.65;margin-bottom:1.8rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:1rem;}
+.card-title{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;}
+.field{margin-bottom:1.1rem;}
+.field label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.35rem;}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;padding:.65rem .9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s,background .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--mint);background:rgba(0,180,160,.06);}
+.field select option{background:#1a2b3c;}
+.field textarea{resize:vertical;min-height:70px;line-height:1.55;}
+.prog-wrap{margin-bottom:1.8rem;}
+.prog-meta{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.45rem;}
+.prog-track{height:4px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--mint));border-radius:10px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.pac-counter{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.pac-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;transition:all .3s;}
+.pac-dot.done{background:var(--teal);border-color:var(--teal);color:#fff;}
+.pac-dot.active{background:rgba(0,127,140,.2);border-color:var(--teal);color:var(--mint);}
+.pac-dot.pending{color:var(--muted);}
+.factor-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding:.6rem .9rem;border-radius:10px;}
+.factor-header.pre{background:rgba(26,111,160,.12);border:1px solid rgba(26,111,160,.25);}
+.factor-header.prc{background:rgba(180,83,9,.12);border:1px solid rgba(180,83,9,.25);}
+.factor-header.man{background:rgba(217,79,61,.12);border:1px solid rgba(217,79,61,.25);}
+.factor-header.pro{background:rgba(6,95,70,.12);border:1px solid rgba(6,95,70,.25);}
+.fh-emoji{font-size:1.3rem;}
+.fh-text h3{font-size:1rem;font-weight:700;}
+.fh-text p{font-size:.75rem;color:var(--muted);margin-top:.1rem;line-height:1.4;}
+.factor-header.pre .fh-text h3{color:#5BAADC;}
+.factor-header.prc .fh-text h3{color:#F6B860;}
+.factor-header.man .fh-text h3{color:#F08070;}
+.factor-header.pro .fh-text h3{color:#4ADE80;}
+.check-list{display:flex;flex-direction:column;gap:.5rem;}
+.check-item{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem .9rem;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);}
+.check-item:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.05);}
+.check-item.checked{border-color:rgba(0,180,160,.4);background:rgba(0,180,160,.08);}
+.check-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.check-item.checked .check-box{background:var(--mint);border-color:var(--mint);}
+.check-box::after{content:'✓';font-size:.7rem;color:#fff;opacity:0;transition:opacity .15s;}
+.check-item.checked .check-box::after{opacity:1;}
+.check-text{font-size:.88rem;line-height:1.45;color:rgba(232,237,242,.8);}
+.check-item.checked .check-text{color:var(--text);}
+.pause-box{border-radius:14px;padding:1.2rem 1.3rem;margin-bottom:1rem;}
+.pause-box.pac-turn{background:rgba(232,168,56,.08);border:1.5px solid rgba(232,168,56,.25);}
+.pause-icon{font-size:1.8rem;margin-bottom:.5rem;}
+.pause-title{font-size:1rem;font-weight:700;margin-bottom:.4rem;color:var(--gold);}
+.pause-body{font-size:.88rem;line-height:1.65;color:rgba(232,237,242,.78);}
+
+/* ── TOPICS BOX (sin guion) ── */
+.topics-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.9rem 1rem;margin-bottom:1rem;}
+.topics-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.topic-pill{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:.25rem .7rem;font-size:.77rem;color:rgba(232,237,242,.65);margin:.2rem .2rem .2rem 0;}
+
+/* ══ AUDIO RECORDER ══ */
+.audio-recorder{background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:1.1rem 1.2rem;margin-bottom:1rem;}
+.ar-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;}
+.ar-waveform{height:44px;display:flex;align-items:center;justify-content:center;gap:2px;margin-bottom:.8rem;overflow:hidden;}
+.ar-waveform .bar{width:3px;border-radius:4px;background:var(--teal);opacity:.25;min-height:3px;transition:height .07s ease;}
+.ar-waveform.recording .bar{opacity:1;}
+.ar-controls{display:flex;gap:.55rem;align-items:center;}
+.ar-btn{border:none;border-radius:10px;padding:.55rem 1rem;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s;flex-shrink:0;}
+.ar-btn-rec{background:linear-gradient(135deg,#991B1B,var(--coral));color:#fff;}
+.ar-btn-rec:hover{opacity:.9;}
+.ar-btn-rec.active-rec{animation:recPulse 1.3s infinite;}
+.ar-btn-stop{background:rgba(217,79,61,.15);color:var(--coral);border:1.5px solid rgba(217,79,61,.3);}
+.ar-btn-del{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);padding:.55rem .8rem;font-size:.85rem;}
+.ar-btn-del:hover{color:var(--coral);}
+.ar-timer{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--muted);flex:1;text-align:center;}
+.ar-timer.active{color:var(--coral);font-weight:600;}
+.ar-playback{margin-top:.8rem;display:none;}
+.ar-playback.visible{display:block;}
+.ar-saved{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.3);color:var(--mint);border-radius:20px;padding:.22rem .7rem;font-size:.73rem;font-weight:600;margin-bottom:.5rem;}
+.ar-audio{width:100%;height:36px;border-radius:8px;outline:none;display:block;}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,79,61,.5)}50%{box-shadow:0 0 0 8px rgba(217,79,61,0)}}
+
+.reflection-box{background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1rem;margin-bottom:.8rem;}
+.reflection-box label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem;}
+.reflection-box textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.87rem;line-height:1.6;resize:vertical;min-height:60px;}
+
+.star-rating{display:flex;gap:.4rem;margin-top:.4rem;}
+.star{font-size:1.6rem;cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s;}
+.star.lit{opacity:1;}
+.star:hover{transform:scale(1.15);}
+
+.tags-selected{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;}
+.tag-chip{padding:.27rem .68rem;border-radius:20px;font-size:.75rem;font-weight:500;}
+.tag-chip.pre{background:rgba(26,111,160,.18);color:#5BAADC;border:1px solid rgba(26,111,160,.3);}
+.tag-chip.prc{background:rgba(180,83,9,.18);color:#F6B860;border:1px solid rgba(180,83,9,.3);}
+.tag-chip.man{background:rgba(217,79,61,.18);color:#F08070;border:1px solid rgba(217,79,61,.3);}
+.tag-chip.pro{background:rgba(6,95,70,.18);color:#4ADE80;border:1px solid rgba(6,95,70,.3);}
+.tag-chip.none{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
+
+.btn{border:none;border-radius:12px;padding:.8rem 1.6rem;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;width:100%;justify-content:center;margin-top:.6rem;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--mint));color:#fff;}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,180,160,.3);}
+.btn-secondary{background:rgba(255,255,255,.06);color:var(--text);border:1.5px solid var(--border);}
+.btn-secondary:hover{background:rgba(255,255,255,.1);}
+.btn-gold{background:linear-gradient(135deg,#B45309,var(--gold));color:#fff;}
+.btn-gold:hover{opacity:.9;transform:translateY(-1px);}
+
+/* FINAL */
+.final-hero{text-align:center;margin-bottom:2rem;}
+.final-emoji{font-size:4rem;margin-bottom:.7rem;}
+.final-big{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;margin-bottom:.3rem;}
+.final-big span{color:var(--mint);}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.5rem;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem .5rem;text-align:center;}
+.stat-box .sv{font-family:'DM Mono',monospace;font-size:1.5rem;color:var(--gold);font-weight:500;}
+.stat-box .sl{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem;}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.sc-name{font-weight:700;font-size:.92rem;margin-bottom:.3rem;}
+.sc-count{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:.4rem;}
+.factor-summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1rem;}
+.fs-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;}
+.fs-header h3{font-size:.92rem;font-weight:700;}
+.fs-items{display:flex;flex-direction:column;gap:.38rem;}
+.fs-item{display:flex;justify-content:space-between;align-items:center;padding:.28rem 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.fs-item:last-child{border:none;}
+.fi-label{color:rgba(232,237,242,.72);flex:1;font-size:.78rem;padding-right:.5rem;}
+.fs-bar-wrap{flex-shrink:0;width:75px;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin:0 .5rem;}
+.fs-bar{height:100%;border-radius:10px;}
+.fs-bar.pre{background:var(--pre);}
+.fs-bar.prc{background:var(--prc);}
+.fs-bar.man{background:var(--man);}
+.fs-bar.pro{background:var(--pro);}
+.fi-n{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);flex-shrink:0;}
+.audio-report-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-bottom:.5rem;}
+.ari-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.ari-missing{font-size:.82rem;color:var(--muted);font-style:italic;}
+@media(max-width:420px){.summary-grid{grid-template-columns:1fr;}.stat-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- S0: SETUP -->
+<div class="screen active" id="s-setup">
+  <div class="actor-badge actor-psi">Psicólogo/a estudiante</div>
+  <div class="screen-title">Evaluación de<br><span>Factores Psicológicos</span></div>
+  <p class="screen-sub">Aplicarás esta encuesta a <strong>5 personas</strong>. La app te indicará cuándo grabar tu voz — esas grabaciones quedan guardadas para revisión del docente.</p>
+  <div class="card">
+    <div class="card-title">📋 Tus datos</div>
+    <div class="field"><label>Nombre completo</label><input id="psi-name" type="text" placeholder="Tu nombre completo" autocomplete="off"></div>
+    <div class="field"><label>Paralelo / grupo</label><input id="psi-group" type="text" placeholder="Ej: Salud Mental 2 · 2024-2025"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ℹ️ Cómo funciona</div>
+    <div style="font-size:.87rem;line-height:1.65;color:rgba(232,237,242,.7);display:flex;flex-direction:column;gap:.6rem;">
+      <div>🎓 <strong style="color:var(--text)">Pantalla verde</strong> = tu turno — la app te indica qué temas puedes abordar y te pide grabar.</div>
+      <div>🙋 <strong style="color:var(--text)">Pantalla dorada</strong> = participante — entrégale el dispositivo para que responda.</div>
+      <div>🎙️ En cada pausa deberás <strong style="color:var(--text)">grabar tu voz</strong> hablando con el participante. El docente escuchará esas grabaciones.</div>
+      <div>🔒 Los datos del participante son confidenciales.</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="startApp()">Comenzar →</button>
+</div>
+
+<!-- S1: PSI INTRO -->
+<div class="screen" id="s-psi-intro">
+  <div class="actor-badge actor-psi">Psicólogo/a — tu turno</div>
+  <div class="screen-title">Presenta el<br><span>propósito</span></div>
+  <p class="screen-sub">Explícale al participante de qué trata la encuesta antes de entregarle el dispositivo. Graba lo que dices.</p>
+  <div class="topics-box">
+    <div class="topics-label">💡 Temas que podrías abordar</div>
+    <span class="topic-pill">Los 4 tipos de factores psicológicos</span>
+    <span class="topic-pill">Esto no es un diagnóstico</span>
+    <span class="topic-pill">Confidencialidad</span>
+    <span class="topic-pill">Cómo marcar las respuestas</span>
+    <span class="topic-pill">Relación entre factores</span>
+  </div>
+  <div class="audio-recorder">
+    <div class="ar-label">🎙️ Grabación — presentación inicial</div>
+    <div class="ar-waveform" id="wave-intro"></div>
+    <div class="ar-controls">
+      <button class="ar-btn ar-btn-rec" id="btn-rec-intro" onclick="startRec('intro')">⏺ Grabar</button>
+      <button class="ar-btn ar-btn-stop" id="btn-stop-intro" onclick="stopRec('intro')" style="display:none">⏹ Detener</button>
+      <span class="ar-timer" id="timer-intro">00:00</span>
+      <button class="ar-btn ar-btn-del" id="btn-del-intro" onclick="delRec('intro')" style="display:none">🗑</button>
+    </div>
+    <div class="ar-playback" id="play-intro">
+      <div class="ar-saved">✓ Grabación guardada</div>
+      <audio class="ar-audio" id="audio-intro" controls></audio>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="goToPacData()">Entregar al participante →</button>
+</div>
+
+<!-- S2: PAC DATA -->
+<div class="screen" id="s-pac-data">
+  <div class="actor-badge actor-pac">Participante — tu turno</div>
+  <div class="screen-title">Hola, bienvenido/a 👋</div>
+  <p class="screen-sub">Completa estos datos antes de comenzar. Son confidenciales.</p>
+  <div class="card">
+    <div class="card-title">📝 Tus datos</div>
+    <div class="field"><label>Edad</label><input id="pac-age" type="number" placeholder="Ej: 34" min="16" max="90"></div>
+    <div class="field"><label>Género</label>
+      <select id="pac-gender"><option value="">Selecciona…</option><option>Hombre</option><option>Mujer</option><option>No binario/a</option><option>Prefiero no decir</option></select>
+    </div>
+    <div class="field"><label>Ciudad / sector</label><input id="pac-city" type="text" placeholder="Ej: Guayaquil, norte"></div>
+    <div class="field"><label>Ocupación</label>
+      <select id="pac-occ"><option value="">Selecciona…</option><option>Estudiante</option><option>Trabajador/a dependiente</option><option>Trabajador/a independiente</option><option>Desempleado/a</option><option>Ama/amo de casa</option><option>Jubilado/a</option><option>Otro</option></select>
+    </div>
+  </div>
+  <button class="btn btn-gold" onclick="submitPacData()">Continuar →</button>
+</div>
+
+<!-- S3: PREDISPONENTES -->
+<div class="screen" id="s-pre">
+  <div id="prog-pre" class="prog-wrap"></div>
+  <div class="actor-badge actor-pac">Participante — tu turno</div>
+  <div class="factor-header pre"><div class="fh-emoji">🧬</div><div class="fh-text"><h3>Factores Predisponentes</h3><p>Condiciones previas que pueden aumentar la vulnerabilidad emocional</p></div></div>
+  <p style="font-size:.87rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Marca las situaciones que <strong style="color:var(--text)">reconoces en tu historia de vida</strong>.</p>
+  <div class="check-list" id="list-pre"></div>
+  <button class="btn btn-gold" style="margin-top:1.2rem;" onclick="submitPre()">Continuar →</button>
+</div>
+
+<!-- S4: PSI PAUSE PRE -->
+<div class="screen" id="s-pause-pre">
+  <div class="actor-badge actor-psi">Psicólogo/a — tu turno</div>
+  <div class="screen-title">Conversación sobre<br><span>predisponentes</span></div>
+  <p class="screen-sub">Observa lo que marcó el participante y conversa con él/ella. Graba lo que dices.</p>
+  <div id="display-pre-selected"></div>
+  <div class="topics-box">
+    <div class="topics-label">💡 Temas que podrías abordar</div>
+    <span class="topic-pill">Qué implica cada factor marcado</span>
+    <span class="topic-pill">Vulnerabilidad no es destino</span>
+    <span class="topic-pill">Cómo se acumula la vulnerabilidad</span>
+    <span class="topic-pill">El papel de los protectores</span>
+    <span class="topic-pill">Normalización sin minimizar</span>
+  </div>
+  <div class="audio-recorder">
+    <div class="ar-label">🎙️ Grabación — predisponentes</div>
+    <div class="ar-waveform" id="wave-pre"></div>
+    <div class="ar-controls">
+      <button class="ar-btn ar-btn-rec" id="btn-rec-pre" onclick="startRec('pre')">⏺ Grabar</button>
+      <button class="ar-btn ar-btn-stop" id="btn-stop-pre" onclick="stopRec('pre')" style="display:none">⏹ Detener</button>
+      <span class="ar-timer" id="timer-pre">00:00</span>
+      <button class="ar-btn ar-btn-del" id="btn-del-pre" onclick="delRec('pre')" style="display:none">🗑</button>
+    </div>
+    <div class="ar-playback" id="play-pre">
+      <div class="ar-saved">✓ Grabación guardada</div>
+      <audio class="ar-audio" id="audio-pre" controls></audio>
+    </div>
+  </div>
+  <div class="reflection-box">
+    <label>Nota breve (opcional)</label>
+    <textarea id="note-pre" placeholder="Observaciones…"></textarea>
+  </div>
+  <button class="btn btn-primary" onclick="goToPrc()">Entregar al participante — Precipitantes →</button>
+</div>
+
+<!-- S5: PRECIPITANTES -->
+<div class="screen" id="s-prc">
+  <div id="prog-prc" class="prog-wrap"></div>
+  <div class="actor-badge actor-pac">Participante — tu turno</div>
+  <div class="factor-header prc"><div class="fh-emoji">⚡</div><div class="fh-text"><h3>Factores Precipitantes</h3><p>Eventos recientes que generaron malestar emocional significativo</p></div></div>
+  <p style="font-size:.87rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Marca los eventos que <strong style="color:var(--text)">has vivido en el último año</strong> y que afectaron tu bienestar.</p>
+  <div class="check-list" id="list-prc"></div>
+  <button class="btn btn-gold" style="margin-top:1.2rem;" onclick="submitPrc()">Continuar →</button>
+</div>
+
+<!-- S6: PSI PAUSE PRC -->
+<div class="screen" id="s-pause-prc">
+  <div class="actor-badge actor-psi">Psicólogo/a — tu turno</div>
+  <div class="screen-title">Conversación sobre<br><span>precipitantes</span></div>
+  <p class="screen-sub">Observa los eventos que marcó y conversa con el participante. Graba lo que dices.</p>
+  <div id="display-prc-selected"></div>
+  <div class="topics-box">
+    <div class="topics-label">💡 Temas que podrías abordar</div>
+    <span class="topic-pill">Cómo el estrés activa la vulnerabilidad previa</span>
+    <span class="topic-pill">Umbral de regulación emocional</span>
+    <span class="topic-pill">Qué pueden causar estos eventos en su vida</span>
+    <span class="topic-pill">Relación con los predisponentes identificados</span>
+    <span class="topic-pill">Impacto acumulado vs. puntual</span>
+  </div>
+  <div class="audio-recorder">
+    <div class="ar-label">🎙️ Grabación — precipitantes</div>
+    <div class="ar-waveform" id="wave-prc"></div>
+    <div class="ar-controls">
+      <button class="ar-btn ar-btn-rec" id="btn-rec-prc" onclick="startRec('prc')">⏺ Grabar</button>
+      <button class="ar-btn ar-btn-stop" id="btn-stop-prc" onclick="stopRec('prc')" style="display:none">⏹ Detener</button>
+      <span class="ar-timer" id="timer-prc">00:00</span>
+      <button class="ar-btn ar-btn-del" id="btn-del-prc" onclick="delRec('prc')" style="display:none">🗑</button>
+    </div>
+    <div class="ar-playback" id="play-prc">
+      <div class="ar-saved">✓ Grabación guardada</div>
+      <audio class="ar-audio" id="audio-prc" controls></audio>
+    </div>
+  </div>
+  <div class="reflection-box">
+    <label>Nota breve (opcional)</label>
+    <textarea id="note-prc" placeholder="Observaciones…"></textarea>
+  </div>
+  <button class="btn btn-primary" onclick="goToMan()">Entregar al participante — Mantenedores →</button>
+</div>
+
+<!-- S7: MANTENEDORES -->
+<div class="screen" id="s-man">
+  <div id="prog-man" class="prog-wrap"></div>
+  <div class="actor-badge actor-pac">Participante — tu turno</div>
+  <div class="factor-header man"><div class="fh-emoji">🔄</div><div class="fh-text"><h3>Factores Mantenedores</h3><p>Patrones que prolongan el malestar una vez que apareció</p></div></div>
+  <p style="font-size:.87rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Marca los patrones que <strong style="color:var(--text)">reconoces en tu forma habitual de responder</strong> en momentos difíciles.</p>
+  <div class="check-list" id="list-man"></div>
+  <button class="btn btn-gold" style="margin-top:1.2rem;" onclick="submitMan()">Continuar →</button>
+</div>
+
+<!-- S8: PSI PAUSE MAN -->
+<div class="screen" id="s-pause-man">
+  <div class="actor-badge actor-psi">Psicólogo/a — tu turno</div>
+  <div class="screen-title">Conversación sobre<br><span>mantenedores</span></div>
+  <p class="screen-sub">Estos factores son el foco central de cualquier intervención. Conversa y graba.</p>
+  <div id="display-man-selected"></div>
+  <div class="topics-box">
+    <div class="topics-label">💡 Temas que podrías abordar</div>
+    <span class="topic-pill">Por qué el malestar se sostiene en el tiempo</span>
+    <span class="topic-pill">Mantenedores como estrategias de supervivencia</span>
+    <span class="topic-pill">Qué cambiaría si se modificara uno de estos patrones</span>
+    <span class="topic-pill">Mantenedores cognitivos vs. conductuales</span>
+    <span class="topic-pill">El rol del psicólogo en este nivel</span>
+  </div>
+  <div class="audio-recorder">
+    <div class="ar-label">🎙️ Grabación — mantenedores</div>
+    <div class="ar-waveform" id="wave-man"></div>
+    <div class="ar-controls">
+      <button class="ar-btn ar-btn-rec" id="btn-rec-man" onclick="startRec('man')">⏺ Grabar</button>
+      <button class="ar-btn ar-btn-stop" id="btn-stop-man" onclick="stopRec('man')" style="display:none">⏹ Detener</button>
+      <span class="ar-timer" id="timer-man">00:00</span>
+      <button class="ar-btn ar-btn-del" id="btn-del-man" onclick="delRec('man')" style="display:none">🗑</button>
+    </div>
+    <div class="ar-playback" id="play-man">
+      <div class="ar-saved">✓ Grabación guardada</div>
+      <audio class="ar-audio" id="audio-man" controls></audio>
+    </div>
+  </div>
+  <div class="reflection-box">
+    <label>Nota breve (opcional)</label>
+    <textarea id="note-man" placeholder="Observaciones…"></textarea>
+  </div>
+  <button class="btn btn-primary" onclick="goToPro()">Entregar al participante — Protectores →</button>
+</div>
+
+<!-- S9: PROTECTORES -->
+<div class="screen" id="s-pro">
+  <div id="prog-pro" class="prog-wrap"></div>
+  <div class="actor-badge actor-pac">Participante — tu turno</div>
+  <div class="factor-header pro"><div class="fh-emoji">🛡️</div><div class="fh-text"><h3>Factores Protectores</h3><p>Recursos internos y externos que fortalecen tu salud mental</p></div></div>
+  <p style="font-size:.87rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Marca los recursos que <strong style="color:var(--text)">sientes que están presentes en tu vida</strong>, aunque sea parcialmente.</p>
+  <div class="check-list" id="list-pro"></div>
+  <div class="pause-box pac-turn" style="margin-top:1.2rem;">
+    <div class="pause-icon">🙋</div>
+    <div class="pause-title">Antes de continuar — pregúntale al psicólogo/a</div>
+    <div class="pause-body">Cuando termines de marcar, devuelve el dispositivo y hazle esta pregunta:<br><br>
+      <strong style="color:var(--text);font-style:italic;">"¿Qué otros factores protectores podría desarrollar yo, y cómo podría hacerlo?"</strong>
+    </div>
+  </div>
+  <button class="btn btn-gold" style="margin-top:1rem;" onclick="submitPro()">Ya le entregué el dispositivo →</button>
+</div>
+
+<!-- S10: PSI PAUSE PRO -->
+<div class="screen" id="s-pause-pro">
+  <div class="actor-badge actor-psi">Psicólogo/a — tu turno</div>
+  <div class="screen-title">El participante<br><span>te hizo una pregunta</span></div>
+  <p class="screen-sub">Te preguntó: <em>"¿Qué otros factores protectores podría desarrollar, y cómo?"</em> — respóndele y graba tu respuesta.</p>
+  <div id="display-pro-selected"></div>
+  <div class="topics-box">
+    <div class="topics-label">💡 Temas que podrías abordar</div>
+    <span class="topic-pill">Protectores que NO marcó y podría cultivar</span>
+    <span class="topic-pill">Cómo construir redes de apoyo social</span>
+    <span class="topic-pill">Recursos en Ecuador (IESS, MSP, centros universitarios)</span>
+    <span class="topic-pill">Actividad física y regulación emocional</span>
+    <span class="topic-pill">Sentido de propósito y valores como ancla</span>
+    <span class="topic-pill">Pasos concretos y realistas para empezar</span>
+  </div>
+  <div class="audio-recorder">
+    <div class="ar-label">🎙️ Grabación — respuesta sobre protectores a desarrollar</div>
+    <div class="ar-waveform" id="wave-pro"></div>
+    <div class="ar-controls">
+      <button class="ar-btn ar-btn-rec" id="btn-rec-pro" onclick="startRec('pro')">⏺ Grabar</button>
+      <button class="ar-btn ar-btn-stop" id="btn-stop-pro" onclick="stopRec('pro')" style="display:none">⏹ Detener</button>
+      <span class="ar-timer" id="timer-pro">00:00</span>
+      <button class="ar-btn ar-btn-del" id="btn-del-pro" onclick="delRec('pro')" style="display:none">🗑</button>
+    </div>
+    <div class="ar-playback" id="play-pro">
+      <div class="ar-saved">✓ Grabación guardada</div>
+      <audio class="ar-audio" id="audio-pro" controls></audio>
+    </div>
+  </div>
+  <div class="reflection-box">
+    <label>Nota breve (opcional)</label>
+    <textarea id="note-pro" placeholder="Observaciones…"></textarea>
+  </div>
+  <div style="margin-top:.8rem;">
+    <div style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:.4rem;">⭐ Autoevaluación — ¿cómo crees que respondiste?</div>
+    <div class="star-rating" id="stars-pro">
+      <span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span>
+      <span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span>
+      <span class="star" onclick="rateStar(5)">★</span>
+    </div>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1.2rem;" onclick="finishParticipant()">Finalizar este participante →</button>
+</div>
+
+<!-- S11: BETWEEN -->
+<div class="screen" id="s-between">
+  <div class="actor-badge actor-psi">Psicólogo/a</div>
+  <div class="screen-title">Participante <span id="bt-num">1</span> <span style="color:var(--mint)">completado ✓</span></div>
+  <p class="screen-sub" id="between-sub"></p>
+  <div id="pac-counter-wrap" class="pac-counter"></div>
+  <div class="card">
+    <div class="card-title">📊 Resumen — participante <span id="bt-pac-n">1</span></div>
+    <div id="between-content"></div>
+  </div>
+  <div id="between-actions"></div>
+</div>
+
+<!-- S12: FINAL -->
+<div class="screen" id="s-final">
+  <div class="actor-badge actor-info">Reporte Final</div>
+  <div class="final-hero">
+    <div class="final-emoji">🏁</div>
+    <div class="final-big">Encuesta <span>completa</span></div>
+  </div>
+  <div class="card" id="final-psi-info"></div>
+  <div id="final-stats" class="stat-row"></div>
+  <div id="final-factor-summary"></div>
+  <div id="final-profiles"></div>
+  <div id="final-audio-report"></div>
+  <div class="card" style="margin-top:1rem;">
+    <div class="card-title">✍️ Conclusión general</div>
+    <textarea id="final-conclusion" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:10px;padding:.7rem .9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.87rem;line-height:1.6;resize:vertical;min-height:100px;outline:none;" placeholder="Al aplicar esta encuesta a 5 personas observé que…"></textarea>
+  </div>
+  <button class="btn btn-primary" onclick="window.print()" style="margin-top:.5rem;">🖨️ Imprimir reporte</button>
+  <button class="btn btn-secondary" onclick="restartAll()" style="margin-top:.5rem;">🔄 Nueva sesión</button>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  FACTORS
+// ══════════════════════════════════════
+const FACTORS={
+  pre:{label:'Predisponentes',emoji:'🧬',items:['Familiares cercanos con diagnóstico de ansiedad o depresión','Historia de violencia doméstica en mi infancia','Pérdidas importantes durante mi niñez (fallecimiento, separación)','Crianza con poca expresión emocional o afecto limitado','Fui víctima de bullying o acoso escolar','Tengo rasgos de personalidad como alta autoexigencia o perfeccionismo','Me considero emocionalmente sensible o me afectan mucho las situaciones','Crecí en un entorno de pobreza o inestabilidad económica crónica','Experimenté discriminación por género, etnia u orientación sexual','Tengo o he tenido enfermedades crónicas que afectan mi bienestar','Desde pequeño/a sentí que debía ser "el fuerte" de la familia','Me costaba confiar en adultos cuando era niño/a']},
+  prc:{label:'Precipitantes',emoji:'⚡',items:['Pérdida de empleo o cambio laboral significativo en el último año','Ruptura de una relación importante (pareja, amistad, familiar)','Fallecimiento de alguien cercano','Problemas económicos graves o deudas recientes','Accidente, enfermedad o diagnóstico médico serio','Conflictos familiares intensos y frecuentes','Presión académica o exámenes de alto riesgo','Migración reciente o lejanía forzada de mis seres queridos','Situación de violencia o inseguridad en mi entorno','Cambio de etapa vital difícil (jubilación, maternidad/paternidad, divorcio)','Pandemia u otro evento colectivo que alteró mi vida','Sobrecarga de responsabilidades sin descanso suficiente']},
+  man:{label:'Mantenedores',emoji:'🔄',items:['Me aíslo socialmente cuando me siento mal','Evito situaciones que me generan ansiedad','Rumio los problemas repetidamente sin llegar a soluciones','Consumo alcohol, tabaco u otras sustancias para sentirme mejor','Duermo muy poco o de forma irregular','No hago actividad física de manera regular','Me critico mucho a mí mismo/a cuando cometo errores','No pido ayuda aunque la necesite','Postergación: dejo las cosas para después y eso me genera más estrés','Paso muchas horas en redes sociales comparándome con otros','No tengo rutinas estables de alimentación o sueño','Guardo mis emociones y no las expreso por miedo al rechazo']},
+  pro:{label:'Protectores',emoji:'🛡️',items:['Tengo al menos una persona de confianza con quien hablar','Practico alguna actividad física regularmente','Tengo o he tenido acceso a apoyo psicológico o terapia','Pertenezco a un grupo social (familia, amigos, comunidad, iglesia)','Tengo habilidades para regular mis emociones (respiro, me calmo, pido tiempo)','Tengo metas o proyectos que me dan sentido y motivación','Me considero una persona resiliente — he superado cosas difíciles antes','Tengo estabilidad económica básica que me permite cubrir mis necesidades','Cuento con una red familiar que me apoya en momentos difíciles','Practico alguna actividad creativa o expresiva (arte, música, escritura)','Tengo creencias espirituales o filosóficas que me dan sostén','En mi trabajo o escuela me siento valorado/a y respetado/a']}
+};
+
+// ══════════════════════════════════════
+//  AUDIO ENGINE
+// ══════════════════════════════════════
+const RS={};
+const BARS=28;
+
+function buildWave(id){
+  const w=document.getElementById('wave-'+id);
+  if(!w)return;
+  w.innerHTML='';
+  for(let i=0;i<BARS;i++){const b=document.createElement('div');b.className='bar';b.style.height='3px';w.appendChild(b);}
+}
+
+function animWave(id,analyser){
+  const w=document.getElementById('wave-'+id);
+  if(!w||!analyser)return;
+  const bars=w.querySelectorAll('.bar');
+  const buf=new Uint8Array(analyser.frequencyBinCount);
+  const step=Math.floor(analyser.frequencyBinCount/BARS);
+  function draw(){
+    if(!RS[id]||!RS[id].af)return;
+    RS[id].af=requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(buf);
+    bars.forEach((b,i)=>{b.style.height=Math.max(3,Math.round((buf[i*step]/255)*40))+'px';});
+  }
+  RS[id].af=requestAnimationFrame(draw);
+}
+
+function stopWave(id){
+  if(RS[id]&&RS[id].af){cancelAnimationFrame(RS[id].af);RS[id].af=null;}
+  const w=document.getElementById('wave-'+id);
+  if(w)w.querySelectorAll('.bar').forEach(b=>b.style.height='3px');
+}
+
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+async function startRec(id){
+  if(!navigator.mediaDevices){alert('Tu navegador no soporta grabación. Usa Chrome (Android) o Safari (iOS).');return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const ACtx=window.AudioContext||window.webkitAudioContext;
+    const ctx=new ACtx();
+    const src=ctx.createMediaStreamSource(stream);
+    const analyser=ctx.createAnalyser();
+    analyser.fftSize=64;
+    src.connect(analyser);
+    const mr=new MediaRecorder(stream);
+    const chunks=[];
+    mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+    mr.onstop=()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      ctx.close();
+      const blob=new Blob(chunks,{type:'audio/webm'});
+      const url=URL.createObjectURL(blob);
+      RS[id].blob=blob; RS[id].url=url;
+      // save to state
+      if(state.cur){if(!state.cur.audios)state.cur.audios={};state.cur.audios[id]=url;}
+      const ae=document.getElementById('audio-'+id);
+      if(ae)ae.src=url;
+      const pe=document.getElementById('play-'+id);
+      if(pe)pe.classList.add('visible');
+      document.getElementById('btn-del-'+id).style.display='';
+    };
+    if(!RS[id])RS[id]={};
+    Object.assign(RS[id],{mediaRecorder:mr,chunks,analyser,af:null,secs:0});
+    mr.start(200);
+    document.getElementById('btn-rec-'+id).style.display='none';
+    document.getElementById('btn-stop-'+id).style.display='';
+    document.getElementById('wave-'+id).classList.add('recording');
+    const te=document.getElementById('timer-'+id);
+    te.classList.add('active');
+    RS[id].secs=0;
+    RS[id].ti=setInterval(()=>{RS[id].secs++;te.textContent=fmt(RS[id].secs);},1000);
+    animWave(id,analyser);
+  }catch(e){alert('No se pudo acceder al micrófono. Verifica los permisos.');console.error(e);}
+}
+
+function stopRec(id){
+  const rs=RS[id];if(!rs||!rs.mediaRecorder)return;
+  rs.mediaRecorder.stop();
+  clearInterval(rs.ti);
+  stopWave(id);
+  document.getElementById('btn-rec-'+id).style.display='';
+  document.getElementById('btn-stop-'+id).style.display='none';
+  document.getElementById('wave-'+id).classList.remove('recording');
+  document.getElementById('timer-'+id).classList.remove('active');
+  document.getElementById('btn-rec-'+id).innerHTML='⏺ Re-grabar';
+}
+
+function delRec(id){
+  if(!confirm('¿Eliminar esta grabación?'))return;
+  if(RS[id]){RS[id].url=null;RS[id].blob=null;}
+  const ae=document.getElementById('audio-'+id);if(ae)ae.src='';
+  document.getElementById('play-'+id).classList.remove('visible');
+  document.getElementById('btn-del-'+id).style.display='none';
+  document.getElementById('timer-'+id).textContent='00:00';
+  document.getElementById('btn-rec-'+id).innerHTML='⏺ Grabar';
+  if(state.cur&&state.cur.audios)delete state.cur.audios[id];
+}
+
+['intro','pre','prc','man','pro'].forEach(buildWave);
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let state={psiName:'',psiGroup:'',currentPac:0,totalPac:5,participants:[],proRating:0,cur:null};
+
+function newPac(){return{n:state.currentPac+1,age:'',gender:'',city:'',occ:'',pre:[],prc:[],man:[],pro:[],notePre:'',notePrc:'',noteMan:'',notePro:'',proRating:0,audios:{}};}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+}
+
+// ══════════════════════════════════════
+//  FLOW
+// ══════════════════════════════════════
+function startApp(){
+  const n=document.getElementById('psi-name').value.trim();
+  if(!n){alert('Ingresa tu nombre para continuar.');return;}
+  state.psiName=n;
+  state.psiGroup=document.getElementById('psi-group').value.trim();
+  state.cur=newPac();
+  showScreen('s-psi-intro');
+}
+
+function goToPacData(){showScreen('s-pac-data');}
+
+function submitPacData(){
+  const age=document.getElementById('pac-age').value;
+  const gender=document.getElementById('pac-gender').value;
+  const city=document.getElementById('pac-city').value.trim();
+  const occ=document.getElementById('pac-occ').value;
+  if(!age||!gender||!city||!occ){alert('Completa todos los campos.');return;}
+  state.cur.age=age;state.cur.gender=gender;state.cur.city=city;state.cur.occ=occ;
+  buildList('pre');prog('pre',1,5);showScreen('s-pre');
+}
+
+function buildList(f){
+  const el=document.getElementById('list-'+f);if(!el)return;
+  el.innerHTML='';
+  FACTORS[f].items.forEach(item=>{
+    const d=document.createElement('div');d.className='check-item';
+    d.innerHTML=`<div class="check-box"></div><div class="check-text">${item}</div>`;
+    d.onclick=()=>d.classList.toggle('checked');
+    el.appendChild(d);
+  });
+}
+
+function getChecked(f){return Array.from(document.querySelectorAll(`#list-${f} .check-item.checked`)).map(e=>e.querySelector('.check-text').textContent);}
+
+function prog(f,step,total){
+  const el=document.getElementById('prog-'+f);if(!el)return;
+  const pct=Math.round((step/total)*100);
+  el.innerHTML=`<div class="prog-meta"><span>Participante ${state.currentPac+1} de ${state.totalPac}</span><span>Paso ${step}/5</span></div><div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+}
+
+function renderSel(cid,f,items){
+  const el=document.getElementById(cid);if(!el)return;
+  const F=FACTORS[f];
+  const chips=items.length?items.map(i=>`<span class="tag-chip ${f}">${i}</span>`).join(''):`<span class="tag-chip none">Ninguno seleccionado</span>`;
+  el.innerHTML=`<div class="card"><div class="card-title">${F.emoji} ${F.label} marcados</div><div class="tags-selected">${chips}</div></div>`;
+}
+
+function saveAudio(id){if(RS[id]&&RS[id].url&&state.cur){if(!state.cur.audios)state.cur.audios={};state.cur.audios[id]=RS[id].url;}}
+
+function submitPre(){state.cur.pre=getChecked('pre');saveAudio('intro');renderSel('display-pre-selected','pre',state.cur.pre);showScreen('s-pause-pre');}
+function goToPrc(){state.cur.notePre=document.getElementById('note-pre').value;saveAudio('pre');buildList('prc');prog('prc',2,5);showScreen('s-prc');}
+function submitPrc(){state.cur.prc=getChecked('prc');renderSel('display-prc-selected','prc',state.cur.prc);showScreen('s-pause-prc');}
+function goToMan(){state.cur.notePrc=document.getElementById('note-prc').value;saveAudio('prc');buildList('man');prog('man',3,5);showScreen('s-man');}
+function submitMan(){state.cur.man=getChecked('man');renderSel('display-man-selected','man',state.cur.man);showScreen('s-pause-man');}
+function goToPro(){state.cur.noteMan=document.getElementById('note-man').value;saveAudio('man');buildList('pro');prog('pro',4,5);showScreen('s-pro');}
+function submitPro(){state.cur.pro=getChecked('pro');renderSel('display-pro-selected','pro',state.cur.pro);state.proRating=0;document.querySelectorAll('#stars-pro .star').forEach(s=>s.classList.remove('lit'));showScreen('s-pause-pro');}
+
+function rateStar(n){state.proRating=n;document.querySelectorAll('#stars-pro .star').forEach((s,i)=>s.classList.toggle('lit',i<n));}
+
+function finishParticipant(){
+  state.cur.notePro=document.getElementById('note-pro').value;
+  state.cur.proRating=state.proRating;
+  saveAudio('pro');
+  state.participants.push({...state.cur,audios:{...state.cur.audios}});
+  state.currentPac++;
+  buildBetween();
+  showScreen('s-between');
+}
+
+function buildBetween(){
+  const n=state.currentPac,p=state.participants[n-1],isLast=n>=state.totalPac;
+  document.getElementById('bt-num').textContent=n;
+  document.getElementById('bt-pac-n').textContent=n;
+  document.getElementById('between-sub').textContent=isLast?'¡Completaste las 5 encuestas! Revisa el reporte final.':`Busca al participante ${n+1} cuando estés listo/a.`;
+  renderDots();
+  const audN=Object.keys(p.audios||{}).filter(k=>p.audios[k]).length;
+  document.getElementById('between-content').innerHTML=`
+    <div style="font-size:.83rem;color:var(--muted);margin-bottom:.8rem;">${p.age} años · ${p.gender} · ${p.occ} · ${p.city}</div>
+    ${['pre','prc','man','pro'].map(f=>{const a=p[f];return`<div style="margin-bottom:.7rem;"><div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;">${FACTORS[f].emoji} ${FACTORS[f].label} (${a.length})</div><div class="tags-selected">${a.length?a.map(i=>`<span class="tag-chip ${f}">${i}</span>`).join(''):'<span class="tag-chip none">Ninguno</span>'}</div></div>`;}).join('')}
+    <div style="font-size:.78rem;color:${audN?'var(--mint)':'var(--muted)'};margin-top:.5rem;">🎙️ ${audN} grabación(es) guardadas</div>`;
+  document.getElementById('between-actions').innerHTML=isLast
+    ?`<button class="btn btn-primary" onclick="buildFinal()">Ver reporte final 🏁</button>`
+    :`<button class="btn btn-primary" onclick="nextPac()">Comenzar participante ${n+1} →</button>`;
+}
+
+function renderDots(){
+  const w=document.getElementById('pac-counter-wrap');if(!w)return;
+  w.innerHTML=Array.from({length:state.totalPac},(_,i)=>{
+    const c=i<state.currentPac?'done':i===state.currentPac?'active':'pending';
+    return`<div class="pac-dot ${c}">${c==='done'?'✓':i+1}</div>`;
+  }).join('');
+}
+
+function nextPac(){
+  ['intro','pre','prc','man','pro'].forEach(id=>{
+    if(RS[id])RS[id]={};
+    buildWave(id);
+    const p=document.getElementById('play-'+id);if(p)p.classList.remove('visible');
+    const a=document.getElementById('audio-'+id);if(a)a.src='';
+    const d=document.getElementById('btn-del-'+id);if(d)d.style.display='none';
+    const t=document.getElementById('timer-'+id);if(t)t.textContent='00:00';
+    const r=document.getElementById('btn-rec-'+id);if(r)r.innerHTML='⏺ Grabar';
+    const s=document.getElementById('btn-stop-'+id);if(s)s.style.display='none';
+  });
+  ['pac-age','pac-city'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['pac-gender','pac-occ'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['note-pre','note-prc','note-man','note-pro'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  state.cur=newPac();state.proRating=0;
+  showScreen('s-psi-intro');
+}
+
+// ══════════════════════════════════════
+//  FINAL REPORT
+// ══════════════════════════════════════
+function buildFinal(){
+  const ps=state.participants;
+  document.getElementById('final-psi-info').innerHTML=`<div class="card-title">🎓 Estudiante-psicólogo/a</div><div style="font-size:.95rem;font-weight:600;">${state.psiName}</div><div style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">${state.psiGroup}</div><div style="font-size:.8rem;color:var(--muted);margin-top:.2rem;">${ps.length} participantes encuestados</div>`;
+
+  const tot={pre:0,prc:0,man:0,pro:0};
+  ps.forEach(p=>{['pre','prc','man','pro'].forEach(f=>tot[f]+=p[f].length);});
+  const avgS=(ps.reduce((a,p)=>a+p.proRating,0)/ps.length).toFixed(1);
+  const totalAud=ps.reduce((a,p)=>a+Object.keys(p.audios||{}).filter(k=>p.audios[k]).length,0);
+
+  document.getElementById('final-stats').innerHTML=`
+    <div class="stat-box"><div class="sv">${ps.length}</div><div class="sl">Participantes</div></div>
+    <div class="stat-box"><div class="sv">${(tot.pro/ps.length).toFixed(1)}</div><div class="sl">Prot. prom.</div></div>
+    <div class="stat-box"><div class="sv">${avgS}★</div><div class="sl">Auto-eval.</div></div>
+    <div class="stat-box"><div class="sv">${totalAud}</div><div class="sl">Grabaciones</div></div>`;
+
+  // freq
+  const freq={};
+  ['pre','prc','man','pro'].forEach(f=>{freq[f]={};FACTORS[f].items.forEach(i=>{freq[f][i]=0;});ps.forEach(p=>p[f].forEach(i=>{if(freq[f][i]!==undefined)freq[f][i]++;}));});
+  let fsH='';
+  ['pre','prc','man','pro'].forEach(f=>{
+    const F=FACTORS[f];
+    const sorted=Object.entries(freq[f]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const mx=sorted[0]?.[1]||1;
+    fsH+=`<div class="factor-summary"><div class="fs-header"><span style="font-size:1.2rem">${F.emoji}</span><h3>${F.label} — Top 5</h3></div><div class="fs-items">${sorted.map(([item,n])=>`<div class="fs-item"><div class="fi-label">${item}</div><div class="fs-bar-wrap"><div class="fs-bar ${f}" style="width:${n?Math.round((n/mx)*100):0}%"></div></div><div class="fi-n">${n}/5</div></div>`).join('')}</div></div>`;
+  });
+  document.getElementById('final-factor-summary').innerHTML=fsH;
+
+  // profiles
+  let profH=`<div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:1.2rem 0 .8rem;">📁 Perfiles individuales</div><div class="summary-grid">`;
+  ps.forEach((p,i)=>{
+    const tot2=p.pre.length+p.prc.length+p.man.length+p.pro.length;
+    const audN=Object.keys(p.audios||{}).filter(k=>p.audios[k]).length;
+    profH+=`<div class="summary-card"><div class="sc-name">Participante ${i+1}</div><div style="font-size:.75rem;color:var(--muted);margin-bottom:.4rem;">${p.age}a · ${p.gender}<br>${p.occ} · ${p.city}</div><div class="tags-selected"><span class="tag-chip pre">${p.pre.length}</span><span class="tag-chip prc">${p.prc.length}</span><span class="tag-chip man">${p.man.length}</span><span class="tag-chip pro">${p.pro.length}</span></div><div class="sc-count">${tot2} factores · ⭐${p.proRating}/5 · 🎙️${audN}</div></div>`;
+  });
+  profH+='</div>';
+  profH+=ps.map((p,i)=>{
+    const notes=[{l:'Predisponentes',v:p.notePre},{l:'Precipitantes',v:p.notePrc},{l:'Mantenedores',v:p.noteMan},{l:'Protectores',v:p.notePro}].filter(n=>n.v&&n.v.trim());
+    if(!notes.length)return'';
+    return`<details style="margin-bottom:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;"><summary style="cursor:pointer;font-size:.85rem;font-weight:600;">📝 Notas — Participante ${i+1}</summary><div style="margin-top:.7rem;display:flex;flex-direction:column;gap:.5rem;">${notes.map(n=>`<div><div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;">${n.l}</div><div style="font-size:.84rem;color:rgba(232,237,242,.8);margin-top:.2rem;line-height:1.5;">${n.v}</div></div>`).join('<hr style="border:none;border-top:1px solid var(--border)">')}</div></details>`;
+  }).join('');
+  document.getElementById('final-profiles').innerHTML=profH;
+
+  // AUDIO REPORT
+  const AL={intro:'Presentación inicial',pre:'Conversación — Predisponentes',prc:'Conversación — Precipitantes',man:'Conversación — Mantenedores',pro:'Respuesta — Protectores a desarrollar'};
+  let audH=`<div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:1.5rem 0 .8rem;">🎙️ Grabaciones de audio — revisión docente</div>`;
+  ps.forEach((p,i)=>{
+    const aud=p.audios||{};
+    const n=Object.keys(aud).filter(k=>aud[k]).length;
+    audH+=`<details style="margin-bottom:.7rem;background:var(--surface);border:1px solid rgba(0,180,160,.2);border-radius:12px;padding:.8rem 1rem;"><summary style="cursor:pointer;font-size:.88rem;font-weight:700;color:var(--mint);">🎙️ Participante ${i+1} — ${p.age}a, ${p.gender} · ${n} grabación(es)</summary><div style="margin-top:.9rem;display:flex;flex-direction:column;gap:.6rem;">${Object.entries(AL).map(([k,label])=>{const url=aud[k];return`<div class="audio-report-item"><div class="ari-label">${label}</div>${url?`<audio class="ar-audio" src="${url}" controls style="width:100%;height:36px;border-radius:8px;display:block;"></audio>`:'<div class="ari-missing">Sin grabación</div>'}</div>`;}).join('')}</div></details>`;
+  });
+  document.getElementById('final-audio-report').innerHTML=audH;
+  showScreen('s-final');
+}
+
+function restartAll(){
+  if(!confirm('¿Comenzar desde cero? Se perderán datos y grabaciones.'))return;
+  state={psiName:'',psiGroup:'',currentPac:0,totalPac:5,participants:[],proRating:0,cur:null};
+  ['intro','pre','prc','man','pro'].forEach(id=>{RS[id]={};buildWave(id);});
+  ['psi-name','psi-group'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  showScreen('s-setup');
+}
+</script>
+</body>
+</html>
